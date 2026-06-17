@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* 診所配色變數 */
+:root {
+  --color-primary:   #4f46e5;  /* 品牌紫 */
+  --color-success:   #22c55e;  /* 綠燈 */
+  --color-warning:   #f59e0b;  /* 黃燈 */
+  --color-danger:    #ef4444;  /* 紅燈 */
+  --color-info:      #0ea5e9;  /* 資訊藍 */
+}
+
+body {
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  background-color: #f8fafc;
+}
+
+/* 通用卡片 */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-slate-100 p-5;
+}
+
+/* 燈號 badge */
+.badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800; }
+.badge-yellow { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800; }
+.badge-orange { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800; }
+.badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800; }
+.badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600; }
