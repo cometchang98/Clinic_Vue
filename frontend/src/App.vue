@@ -221,16 +221,26 @@ watch(() => patientStore.pid, (v) => loadSummary(v), { immediate: true })
 
 const vChips = computed(() => {
   const s = summary.value
-  if (!s) return []
-  const d = s.demographics || {}, v = s.vitals || {}
+  const p = patientStore.currentPatient || {}
+  const d = s?.demographics || {}, v = s?.vitals || {}
+
+  // 優先用 BQ summary，缺值時回退「今日名單帶的 dashboard 欄位」（身高/BMI 等 BQ vitals 常缺）
+  const coalesce = (a, b) => (a !== null && a !== undefined && a !== '' ? a : b)
+  const age    = coalesce(d.age,    p.年齡)
+  const sex    = coalesce(d.sex,    p.性別)
+  const height = coalesce(v.height, p.身高)
+  const weight = coalesce(v.weight, p.體重)
+  const bmi    = coalesce(v.bmi,    p.BMI)
+  const waist  = v.waist
+
   const out = []
-  if (d.age != null) out.push({ k: 'age',   label: '',     val: `${d.age}歲` })
-  if (d.sex)         out.push({ k: 'sex',   label: '',     val: d.sex })
-  if (v.height != null) out.push({ k: 'h',     label: '身高', val: v.height })
-  if (v.weight != null) out.push({ k: 'w',     label: '體重', val: v.weight })
-  if (v.bmi != null)    out.push({ k: 'bmi',   label: 'BMI',  val: v.bmi })
-  if (v.waist != null)  out.push({ k: 'waist', label: '腰圍', val: v.waist })
-  if (v.sbp != null)    out.push({ k: 'bp',    label: '血壓', val: `${v.sbp}/${v.dbp ?? '-'}` })
+  if (age    != null && age    !== '') out.push({ k: 'age',   label: '',     val: `${age}歲` })
+  if (sex)                             out.push({ k: 'sex',   label: '',     val: sex })
+  if (height != null && height !== '') out.push({ k: 'h',     label: '身高', val: height })
+  if (weight != null && weight !== '') out.push({ k: 'w',     label: '體重', val: weight })
+  if (bmi    != null && bmi    !== '') out.push({ k: 'bmi',   label: 'BMI',  val: bmi })
+  if (waist  != null)                  out.push({ k: 'waist', label: '腰圍', val: waist })
+  if (v.sbp  != null)                  out.push({ k: 'bp',    label: '血壓', val: `${v.sbp}/${v.dbp ?? '-'}` })
   return out
 })
 
