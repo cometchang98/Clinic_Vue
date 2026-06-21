@@ -167,6 +167,17 @@
           <span v-if="summaryLoading" class="text-[11px] text-indigo-300">…</span>
         </div>
 
+        <!-- 💉 V1 疫苗提醒晶片 -->
+        <div v-if="vaccineItems.length" class="flex flex-wrap items-center gap-1.5">
+          <span
+            v-for="item in vaccineItems" :key="item.類別"
+            class="px-2 py-0.5 rounded bg-amber-400/90 text-[11px] text-amber-950 font-medium whitespace-nowrap"
+            :title="item.提醒摘要"
+          >
+            💉 {{ vaccineLabel(item) }}
+          </span>
+        </div>
+
         <button
           @click="patientStore.unlock()"
           class="ml-auto shrink-0 text-indigo-200 hover:text-white text-xs border border-indigo-400 rounded px-2 py-0.5 transition-colors"
@@ -201,17 +212,24 @@ const patientStore = usePatientStore()
 // ── 鎖定病患速覽（性別/年齡 + 生命徵象）────────────────────
 const summary        = ref(null)
 const summaryLoading = ref(false)
+const vaccineItems   = ref([])   // V1: 疫苗提醒晶片
 
 async function loadSummary(pid) {
-  summary.value = null
+  summary.value     = null
+  vaccineItems.value = []
   if (!pid || pid === '無紀錄') return
   summaryLoading.value = true
   try {
-    const res = await fetch(`/api/schedule/summary/${pid}`)
-    const j   = await res.json()
+    const [sumRes, vacRes] = await Promise.all([
+      fetch(`/api/schedule/summary/${pid}`),
+      fetch(`/api/vaccine/${pid}`),
+    ])
+    const j = await sumRes.json()
     if (!j.error) summary.value = j
+    const v = await vacRes.json()
+    if (v.need_vaccine) vaccineItems.value = v.items || []
   } catch {
-    /* 速覽失敗不影響主流程 */
+    /* 速覽/疫苗查詢失敗不影響主流程 */
   } finally {
     summaryLoading.value = false
   }
@@ -321,6 +339,16 @@ async function searchPatient() {
 function riskIcon(p) {
   const badge = p.風險燈號 ?? ''
   return badge.split(' ')[0] || '⚪'
+}
+
+function vaccineLabel(item) {
+  const map = {
+    'PCV-提醒':      '建議打PCV',
+    '第一劑-提醒':   '建議打Shingrix',
+    '第二劑-催種':   'Shingrix第二劑',
+    '第二劑-最後通牒': 'Shingrix第二劑⚠️',
+  }
+  return map[item.類別] ?? item.疫苗
 }
 
 function shortTags(tags) {
