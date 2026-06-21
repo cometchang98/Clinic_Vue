@@ -20,6 +20,7 @@ from routers.schedule         import router as schedule_router
 from routers.dm_care          import router as dm_care_router
 from routers.dm_followup      import router as dm_followup_router
 from routers.educator         import router as educator_router
+from routers.vaccine          import router as vaccine_router
 
 app = FastAPI(
     title="凱程診所戰情室 API",
@@ -48,6 +49,7 @@ app.include_router(schedule_router)
 app.include_router(dm_care_router)
 app.include_router(dm_followup_router)
 app.include_router(educator_router)
+app.include_router(vaccine_router)
 
 
 @app.get("/api/health")

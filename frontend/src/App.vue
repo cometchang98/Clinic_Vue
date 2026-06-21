@@ -243,6 +243,7 @@ const coreItems = [
   { to: '/educator',          icon: '🍎', label: '衛教師工作站' },
 ]
 const clinicItems = [
+  { to: '/vaccine',      icon: '💉', label: '疫苗提醒' },
   { to: '/consultation', icon: '🩺', label: '虛擬會診室' },
   { to: '/data-mining',  icon: '🔬', label: '雲端大數據' },
   { to: '/marketing',    icon: '📢', label: '營運發想與群發' },

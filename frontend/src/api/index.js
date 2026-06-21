@@ -61,3 +61,15 @@ export const plan888Api = {
   getDiary(pid)                { return http.get(`/plan888/diary/${pid}`) },
   saveDiary(pid, content)      { return http.put(`/plan888/diary/${pid}`, { content }) },
 }
+
+// ==========================================
+// 💉 疫苗提醒 API（帶狀皰疹 Shingrix 催種）
+// ==========================================
+export const vaccineApi = {
+  // 整份報告（含分組明細 + summary + rules）
+  getReport()        { return http.get('/vaccine/report') },
+  // 扁平提醒清單（前端列表用）
+  getDue()           { return http.get('/vaccine/due') },
+  // 看診工作區：單一病人是否需提醒
+  getForPatient(pid) { return http.get(`/vaccine/${pid}`) },
+}

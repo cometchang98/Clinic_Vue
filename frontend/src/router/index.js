@@ -65,6 +65,12 @@ const routes = [
     component: () => import('@/views/educator/EducatorView.vue'),
     meta: { title: '衛教師工作站' },
   },
+  {
+    path: '/vaccine',
+    name: 'Vaccine',
+    component: () => import('@/views/vaccine/VaccineView.vue'),
+    meta: { title: '疫苗提醒（帶狀皰疹）' },
+  },
 ]
 
 const router = createRouter({
