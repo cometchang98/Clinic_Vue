@@ -24,7 +24,7 @@
 
     <template v-else>
       <!-- 統計卡 -->
-      <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="grid grid-cols-4 gap-3 mb-4">
         <button
           v-for="t in tabs" :key="t.key"
           @click="activeTab = t.key"
@@ -50,8 +50,8 @@
               <th class="text-left px-4 py-2 font-medium">病歷號</th>
               <th class="text-left px-4 py-2 font-medium">姓名</th>
               <th class="text-left px-4 py-2 font-medium">年齡</th>
-              <th v-if="activeTab !== 'dose1_remind'" class="text-left px-4 py-2 font-medium">第一劑日期</th>
-              <th v-if="activeTab !== 'dose1_remind'" class="text-left px-4 py-2 font-medium">經過天數</th>
+              <th v-if="activeTab === 'dose2_urgent' || activeTab === 'dose2_normal'" class="text-left px-4 py-2 font-medium">第一劑日期</th>
+              <th v-if="activeTab === 'dose2_urgent' || activeTab === 'dose2_normal'" class="text-left px-4 py-2 font-medium">經過天數</th>
               <th class="text-left px-4 py-2 font-medium">電話</th>
               <th class="text-right px-4 py-2 font-medium">操作</th>
             </tr>
@@ -62,8 +62,8 @@
               <td class="px-4 py-2 text-slate-400">{{ p.病歷號 }}</td>
               <td class="px-4 py-2 font-medium text-slate-700">{{ p.姓名 }}</td>
               <td class="px-4 py-2 text-slate-600">{{ p.年齡 ?? '—' }}</td>
-              <td v-if="activeTab !== 'dose1_remind'" class="px-4 py-2 text-slate-600">{{ p.第一劑日期 }}</td>
-              <td v-if="activeTab !== 'dose1_remind'" class="px-4 py-2">
+              <td v-if="activeTab === 'dose2_urgent' || activeTab === 'dose2_normal'" class="px-4 py-2 text-slate-600">{{ p.第一劑日期 }}</td>
+              <td v-if="activeTab === 'dose2_urgent' || activeTab === 'dose2_normal'" class="px-4 py-2">
                 <span :class="activeTab === 'dose2_urgent' ? 'text-red-600 font-semibold' : 'text-slate-600'">
                   {{ p.經過天數 }} 天
                 </span>
@@ -94,9 +94,10 @@ const loading = ref(false)
 const report  = ref({ available: null })
 
 const tabs = [
-  { key: 'dose2_urgent', label: '第二劑最後通牒 (181~365天)', color: 'text-red-600' },
-  { key: 'dose2_normal', label: '第二劑催種 (60~180天)',      color: 'text-amber-600' },
-  { key: 'dose1_remind', label: '第一劑提醒 (65歲↑糖尿病)',    color: 'text-indigo-600' },
+  { key: 'dose2_urgent', label: '第二劑最後通牒 (181~365天)',        color: 'text-red-600' },
+  { key: 'dose2_normal', label: '第二劑催種 (60~180天)',             color: 'text-amber-600' },
+  { key: 'dose1_remind', label: 'Shingrix 第一劑 (65歲↑DM+已打PCV)', color: 'text-indigo-600' },
+  { key: 'pcv_remind',   label: 'PCV 肺炎鏈球菌 (65歲↑未打)',        color: 'text-teal-600' },
 ]
 const activeTab = ref('dose2_urgent')
 
@@ -104,6 +105,7 @@ const counts = computed(() => ({
   dose2_urgent: (report.value.dose2_urgent || []).length,
   dose2_normal: (report.value.dose2_normal || []).length,
   dose1_remind: (report.value.dose1_remind || []).length,
+  pcv_remind:   (report.value.pcv_remind   || []).length,
 }))
 
 const currentList = computed(() => report.value[activeTab.value] || [])
