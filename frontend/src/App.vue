@@ -169,13 +169,23 @@
 
         <!-- 💉 V1 疫苗提醒晶片 -->
         <div v-if="vaccineItems.length" class="flex flex-wrap items-center gap-1.5">
-          <span
+          <div
             v-for="item in vaccineItems" :key="item.類別"
-            class="px-2 py-0.5 rounded bg-amber-400/90 text-[11px] text-amber-950 font-medium whitespace-nowrap"
+            class="flex items-center gap-1 pl-2 pr-1 py-0.5 rounded bg-amber-400/90 text-[11px] text-amber-950"
             :title="item.提醒摘要"
           >
-            💉 {{ vaccineLabel(item) }}
-          </span>
+            <span class="font-medium whitespace-nowrap">💉 {{ vaccineLabel(item) }}</span>
+            <button
+              @click.stop="dismissVaccine(item, 'vaccinated')"
+              class="px-1 rounded hover:bg-amber-600 hover:text-white transition-colors whitespace-nowrap"
+              title="病人已在他院施打，永久略過"
+            >已施打</button>
+            <button
+              @click.stop="dismissVaccine(item, 'explained')"
+              class="px-1 rounded hover:bg-amber-600 hover:text-white transition-colors whitespace-nowrap"
+              title="今日已說明，6個月內不再提醒"
+            >已說明</button>
+          </div>
         </div>
 
         <button
@@ -206,6 +216,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { usePatientStore } from '@/stores/patient'
+import { vaccineApi } from '@/api'
 
 const patientStore = usePatientStore()
 
@@ -339,6 +350,17 @@ async function searchPatient() {
 function riskIcon(p) {
   const badge = p.風險燈號 ?? ''
   return badge.split(' ')[0] || '⚪'
+}
+
+async function dismissVaccine(item, action) {
+  const pid     = patientStore.pid
+  const vaccine = item.疫苗 === 'PCV' || item.類別?.includes('PCV') ? 'PCV' : 'Shingrix'
+  try {
+    await vaccineApi.dismiss(pid, vaccine, action)
+    // 重查此病人，立即從晶片移除
+    const { data } = await vaccineApi.getForPatient(pid)
+    vaccineItems.value = data.need_vaccine ? (data.items || []) : []
+  } catch { /* 靜默失敗不影響看診 */ }
 }
 
 function vaccineLabel(item) {

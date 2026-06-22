@@ -72,4 +72,8 @@ export const vaccineApi = {
   getDue()           { return http.get('/vaccine/due') },
   // 看診工作區：單一病人是否需提醒
   getForPatient(pid) { return http.get(`/vaccine/${pid}`) },
+  // 記錄「已施打（永久）」或「已說明（6個月）」
+  dismiss(pid, vaccine, action) {
+    return http.post('/vaccine/dismiss', { pid, vaccine, action })
+  },
 }

@@ -70,10 +70,22 @@
               </td>
               <td class="px-4 py-2 text-slate-500">{{ p.電話 }}</td>
               <td class="px-4 py-2 text-right">
-                <button @click="lock(p)"
-                  class="text-xs px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100">
-                  鎖定
-                </button>
+                <div class="flex items-center justify-end gap-1">
+                  <button @click="lock(p)"
+                    class="text-xs px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 whitespace-nowrap">
+                    鎖定
+                  </button>
+                  <button @click="dismiss(p, 'vaccinated')"
+                    class="text-xs px-2 py-1 rounded-md bg-green-50 text-green-700 hover:bg-green-100 whitespace-nowrap"
+                    title="已在他院施打，永久略過">
+                    ✓ 已施打
+                  </button>
+                  <button @click="dismiss(p, 'explained')"
+                    class="text-xs px-2 py-1 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 whitespace-nowrap"
+                    title="今日已說明，6個月內不再提醒">
+                    💬 已說明
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -127,6 +139,15 @@ async function load() {
 
 function lock(p) {
   patientStore.lockPatient({ 病歷號: p.病歷號, 姓名: p.姓名 })
+}
+
+async function dismiss(p, action) {
+  // 從目前 tab 推算疫苗類型
+  const vaccine = activeTab.value === 'pcv_remind' ? 'PCV' : 'Shingrix'
+  try {
+    await vaccineApi.dismiss(p.病歷號, vaccine, action)
+    await load()   // 重整整份報告（backend 已過濾駁回）
+  } catch { /* 靜默失敗 */ }
 }
 
 onMounted(load)
