@@ -168,23 +168,27 @@
         </div>
 
         <!-- 💉 V1 疫苗提醒晶片 -->
-        <div v-if="vaccineItems.length" class="flex flex-wrap items-center gap-1.5">
+        <div v-if="vaccineItems.length" class="flex flex-wrap items-center gap-2">
           <div
             v-for="item in vaccineItems" :key="item.類別"
-            class="flex items-center gap-1 pl-2 pr-1 py-0.5 rounded bg-amber-400/90 text-[11px] text-amber-950"
+            class="flex items-center gap-0 rounded overflow-hidden border border-amber-400 text-[11px]"
             :title="item.提醒摘要"
           >
-            <span class="font-medium whitespace-nowrap">💉 {{ vaccineLabel(item) }}</span>
+            <!-- 左：疫苗標籤（amber） -->
+            <span class="px-2 py-0.5 bg-amber-400/90 text-amber-950 font-medium whitespace-nowrap">
+              💉 {{ vaccineLabel(item) }}
+            </span>
+            <!-- 右：操作按鈕（白底，顏色區分） -->
             <button
               @click.stop="dismissVaccine(item, 'vaccinated')"
-              class="px-1 rounded hover:bg-amber-600 hover:text-white transition-colors whitespace-nowrap"
-              title="病人已在他院施打，永久略過"
-            >已施打</button>
+              class="px-2 py-0.5 bg-white text-green-700 hover:bg-green-50 border-l border-amber-400 whitespace-nowrap transition-colors"
+              title="已在他院施打，永久略過"
+            >✓ 已施打</button>
             <button
               @click.stop="dismissVaccine(item, 'explained')"
-              class="px-1 rounded hover:bg-amber-600 hover:text-white transition-colors whitespace-nowrap"
+              class="px-2 py-0.5 bg-white text-slate-600 hover:bg-slate-50 border-l border-amber-400 whitespace-nowrap transition-colors"
               title="今日已說明，6個月內不再提醒"
-            >已說明</button>
+            >💬 已說明</button>
           </div>
         </div>
 
